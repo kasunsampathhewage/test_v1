@@ -1,0 +1,609 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<header class="app-header"><a class="app-header__logo" >Zkewed</a>
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
+</header>
+
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+
+<aside class="app-sidebar">
+      <div class="app-sidebar__user">
+          <!-- <img class="app-sidebar__user-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="User Image"> -->
+        <div>
+          <p class="app-sidebar__user-name">Zkewed Analytics</p>
+          <p class="app-sidebar__user-designation">An analytics company</p>
+        </div>
+      </div>
+
+      <ul class="app-menu">
+        <li><a class="app-menu__item active" href="{% url 'home' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Summary Dashboard</span></a></li>
+        <li><a class="app-menu__item" href="{% url 'brand' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Detailed Dashboard</span></a></li>
+        <li><a class="app-menu__item" href="{% url 'predict' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Prediction Dashboard</span></a></li>         
+      </ul>  
+</aside>
+
+
+<main class="app-content">
+
+      <div class="app-title"> <!-- page title and form-->
+            <div>
+              <h1><i class="fa fa-dashboard"></i> Summary Dashboard</h1>
+              <p>summary of your overall production</p>
+            </div>
+
+            <!-- filters in form -->
+            <form method="POST" action="." onreset="false">{% csrf_token %}
+                <div class="row">
+
+                    <div class="btn-group mr-2">     
+                        <select class="btn btn-primary" name="year" id="select1" onchange="checkform()" onload="checkValues()">
+                            <option value="0" selected disabled  >select a year</option>
+                            {% for y in years %}
+                            <option value="{{y}}"> {{y}}</option>
+                            {% endfor %}
+                          
+                        </select>
+                    </div>
+                             
+                    <div class="btn-group mr-2">
+                        <select class="btn btn-primary"  name="month"   id="select2" onchange="checkform()">
+                          <option value="0" selected disabled>select a month</option>
+                          {% for m in months %}
+                          <option value="{{m}}">{{m}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+              
+                    <div class="btn-group mr-2">        
+                        <select class="btn btn-primary" name="bigc" id="select3" onchange="checkform()">
+                            <option value="0" selected disabled>select a category</option>  
+                            {% for b in bigcs %}
+                            <option value="{{b}}">{{b}}</option>
+                            {% endfor %}          
+                        </select>         
+                    </div>
+
+                    <div class="btn-group mr-2">
+                        <button class="btn btn-danger" type="submit" id="submitbtn" disabled="disabled" onclick="createViews()" onclick="saleGrowth()"><i class="fa fa-fw fa-lg fa-check-circle"></i>View charts</button>
+                    </div>
+                    
+                </div>
+            </form>
+               
+      </div>
+
+      <p> <h6>Data showing for {{yearf}} {{monthf}} {{bigcf}} </h6></p>
+  
+      <div class="row" id = "cards" > <!-- 4 cards -->
+
+        <!-- card 1-->
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small primary coloured-icon">
+            <i class="icon fa fa fa-usd fa-3x"></i>
+            <div class="info">
+              <h6>Total Sales</h6>
+              <p><b>{{total_sales_cart}} M</b></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- card 2-->
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small info coloured-icon">
+            <i class="icon fa fa fa-usd fa-3x"></i>
+            <div class="info">
+              <h6>Total Investments</h6>
+              <p><b>{{investment_Amount_cart}} M</b></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- card 3-->
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small warning coloured-icon">
+            <i class="icon fa fa-line-chart fa-3x"></i>
+            <div class="info">
+              <h6>sales/Investments</h6>
+              <p><b> {{ROI_value_cart}} </b></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- card 4-->
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small danger coloured-icon"><i class="icon fa fa-line-chart fa-3x"></i>
+            <div class="info" >
+              <h6>Sales growth <br> from {{previous_month_abb}}  to {{monthf}}</h6>
+              <!-- <p id="card4" style="color:red;"> --> <p id="card4"></p>
+                  <b>{{sales_growth_cart}} %</b>
+                </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="row"> <!-- charts here -->
+
+            <!-- chart1 -->
+            <div class="col-md-6">
+              <div class="tile">
+                <h3 class="text-white bg-dark">Annual Sales</h3>
+                  <canvas id="chart1"></canvas>
+                </div>
+            </div>
+
+            <!-- chart2 -->
+            <div class="col-md-6">
+              <div class="tile">
+                <h3 class="text-white bg-dark">Annual Investments</h3>
+                  <canvas id="chart2"></canvas>             
+              </div>
+            </div>
+
+            <!-- chart3 -->
+            <div class="col-md-6">
+              <div class="tile">
+                <h3 class="text-white bg-dark">Investment for Promotion Types</h3>
+                    <canvas id="chart3"></canvas>
+              </div>
+            </div>
+
+            <!-- chart4 -->
+            <div class="col-md-6">
+              <div class="tile">
+                <h3 class="text-white bg-dark">Total sales/Total investment</h3>
+                  <canvas id="chart4"></canvas>
+              </div>
+            </div>
+
+            <!-- chart5 -->
+            <div class="col-md-6">
+                    <div class="tile">
+                      <h3 class="text-white bg-dark">ROI for Promotion types</h3>
+                        <canvas id="chart5"></canvas>
+                    </div>
+                  </div>
+
+      </div>
+
+</main>
+
+<!--- script here -->
+
+<script> //create chart1
+    
+    var testdate = {{Sale_Date|safe}};
+    var ctx = document.getElementById('chart1').getContext('2d');
+
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'bar',
+
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [{
+                    label: 'Sales',
+                    backgroundColor: 'rgb(97,164,164)',
+                    borderColor: 'rgb(97,164,164)',
+                    fill:'No',
+                    data: {{Sale_Amount|safe}}
+
+                }]
+            },
+
+            // Configuration options go here
+            options: {
+                
+                scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                              display: true,
+                              labelString: "Month",
+                            },
+                          },],
+                        yAxes: [{
+                            scaleLabel: {
+                              display: true,
+                              labelString: "Sales",
+                            },
+                          },]
+                 },
+                legend: {
+                    display: false,
+                      labels: {
+                        display: false
+                      }
+                }
+            }
+            
+    });
+
+    setInterval(function(){
+      $.ajax({
+          url:'.',
+          success: function(test){
+            chart1.data.datasets[0].data = test.Sale_Amount;
+            chart1.data.labels = test.Sale_Date;
+            chart1.update();
+          }
+      });
+  });
+</script>
+
+<script> //create chart2
+    var testdate = {{investment_month|safe}};
+    var ctx = document.getElementById('chart2').getContext('2d');
+            
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [{
+                    label: 'Investment Amount',
+                    backgroundColor: 'rgb(97,164,164)',
+                    borderColor: 'rgb(97,164,164)',
+                    fill:'No',                    
+                    data: {{investment_Amount|safe}}
+                }]
+            },
+
+            // Configuration options go here
+            options: {
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: "Month",
+                        },
+                      },],
+                    yAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: "Investment amount",
+                        },
+                      },]
+             },
+                legend: {
+                    display: false,
+                    labels: {
+                        display: false
+                    }
+            }
+            }
+    });
+
+    setInterval(function(){
+      $.ajax({
+          url:'.',
+          success: function(test){
+            chart2.data.datasets[0].data = test.investment_Amount;
+            chart2.data.labels = test.investment_month;
+            chart2.update();
+          }
+      });
+  });
+</script>
+
+<script> //create chart4
+  
+  var testdate = {{ROI_month|safe}};
+  var ctx = document.getElementById('chart4').getContext('2d');
+
+  var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'line',
+
+          // The data for our dataset
+          data: {
+              labels: testdate,
+              datasets: [{
+                  label: 'sales/investment',
+                  backgroundColor: 'rgb(97,164,164)',
+                  borderColor: 'rgb(97,164,164)',
+                  fill:'No',
+                  data: {{ROI_value|safe}}
+              }]
+          },
+
+          // Configuration options go here
+          options: {
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Month",
+                    },
+                  },],
+                yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Sales / Investments",
+                    },
+                  },]
+         },
+            legend: {
+                display: false,
+                labels: {
+                    display: false
+                }
+        }
+          }
+  });
+
+  setInterval(function(){
+    $.ajax({
+        url:'.',
+        success: function(test){
+          chart3.data.datasets[0].data = test.ROI_value;
+          chart3.data.labels = test.ROI_month;
+          chart3.update();
+        }
+    });
+  });
+
+</script>
+
+<script> // create chart3
+  var ctx = document.getElementById('chart3').getContext('2d');
+  var chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+        labels: {{investment_month_A_P|safe}},
+        datasets: [
+            {
+                label: 'Consumer Promotion',
+                fill: false,
+                backgroundColor: 'rgb(64,68,64)',
+                borderColor: 'rgb(64,68,64)',
+                data: {{investment_Amount_Consumer_Promotion|safe}},
+                    },
+            {
+                label: 'A&P',
+                fill: false,
+                backgroundColor: 'rgb(83,102,83)',
+                borderColor: 'rgb(83,102,83)',
+                data: {{investment_Amount_A_P|safe}},
+            },
+            {
+                label: 'Display Only',
+                fill: false,
+                backgroundColor: 'rgb(102, 225, 84)',
+                borderColor: 'rgb(102, 225, 84)',
+                data: {{investment_Amount_Display_Only|safe}},
+            },
+            {
+                label: 'Distributor Margins',
+                fill: false,
+                backgroundColor: 'rgb(69,182,69)',
+                borderColor: 'rgb(69,182,69)',
+                data: {{investment_Amount_Distributor_Margins|safe}},
+            },
+            {
+                label: 'JBP',
+                fill: false,
+                backgroundColor: 'rgb(197,232,27)',
+                borderColor: 'rgb(197,232,27)',
+                data: {{investment_Amount_JBP|safe}},
+            },
+            {
+                label: 'Loyalty Schemes',
+                fill: false,
+                backgroundColor: 'rgb(111,143,7)',
+                borderColor: 'rgb(111,143,7)',
+                data: {{investment_Amount_Loyalty_Schemes|safe}},
+            },
+            {
+                label: 'Search Only',
+                fill: false,
+                backgroundColor: 'rgb(17,113,103)',
+                borderColor: 'rgb(17,113,103)',
+                data: {{investment_Amount_Search_Only|safe}},
+            },
+            {
+                label: 'Trade Promotion',
+                fill: false,
+                backgroundColor: 'rgb(16,217,196)',
+                borderColor: 'rgb(16,217,196)',
+                data: {{investment_Amount_Trade_Promotion|safe}},
+            },
+            {
+                label: 'Video',
+                fill: false,
+                backgroundColor: 'rgb(24,77,110)',
+                borderColor: 'rgb(24,77,110)',
+                data: {{investment_Amount_Video|safe}},
+            },
+            {
+                label: 'Facebook',
+                fill: false,
+                backgroundColor: 'rgb(123, 186, 224)',
+                borderColor: 'rgb(123, 186, 224)',
+                data: {{investment_Amount_facebook|safe}},
+            },
+            {
+                label: 'Instagram',
+                fill: false,
+                backgroundColor: 'rgb(63,234,241)',
+                borderColor: 'rgb(63,234,241)',
+                data: {{investment_Amount_instagram|safe}},
+            },
+            {
+                label: 'Messenger',
+                fill: false,
+                backgroundColor: 'rgb(222,243,123)',
+                borderColor: 'rgb(222,243,123)',
+                data: {{investment_Amount_messenger|safe}},
+            }
+            ]
+            },
+
+            options: {
+
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: "Month",
+                        },
+                      },],
+                    yAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: "Investment Amount",
+                        },
+                      },]
+                },
+                legend:{
+                    display: true,
+                    position: 'bottom',
+                    padding: 0.1,
+                    labels:{
+                        usePointStyle: true,
+                        
+                    }
+
+                }
+            }
+            });
+</script>
+
+<script> //create chart5
+    
+        var testdate = {{ROI_Investment_Types|safe}};
+        var ctx = document.getElementById('chart5').getContext('2d');
+    
+        var chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'horizontalBar',
+    
+                // The data for our dataset
+                data: {
+                    labels: testdate,
+                    datasets: [{
+                        label: 'ROI',
+                        backgroundColor: 'rgb(97,164,164)',
+                        borderColor: 'rgb(97,164,164)',
+                        fill:'No',
+                        data: {{ROI_Investment_value|safe}}
+    
+                    }]
+                },
+    
+                // Configuration options go here
+                options: {
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                              display: true,
+                              labelString: "ROI",
+                            },
+                          },],
+                        yAxes: [{
+                            scaleLabel: {
+                              display: true,
+                              labelString: "Promotion Type",
+                            },
+                          },]
+                 },
+                    legend: {
+                        display: false,
+                        labels: {
+                            display: false
+                        }
+                }
+                }
+        });
+    
+        setInterval(function(){
+            $.ajax({
+                url:'.',
+                success: function(test){
+                  chart1.data.datasets[0].data = test.ROI_Investment_value;
+                  chart1.data.labels = test.ROI_Investment_Types;
+                  chart1.update();
+                }
+            });
+        });
+</script>
+
+<script> // view charts button enable/disable
+    function checkform() {
+        var yearVal = document.getElementById('select1').value;
+        var monthVal = document.getElementById('select2').value;
+        var BigcVal = document.getElementById('select3').value;
+
+        if ((yearVal != 0) && (monthVal != 0) && (BigcVal != 0)) {
+            document.getElementById('submitbtn').disabled = false;
+            console.log('dis');
+        } else {
+            document.getElementById('submitbtn').disabled = true;
+        }
+        }
+
+    function createViews() {
+        console.log("aaaa");
+        var yearVal = document.getElementById('select1').value;
+        var monthVal = document.getElementById('select2').value;
+        var BigcVal = document.getElementById('select3').value;
+        var csrfmiddlewaretoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+  
+        $.ajax({
+          url:'.',
+          method:'POST',
+          data: {
+            'csrfmiddlewaretoken': csrfmiddlewaretoken,
+              'year':yearVal,
+              'month':monthVal,
+              'bigc':BigcVal
+          },
+          success: function(test) {
+                  console.log(test);
+                  // $('html').html(test)
+  
+          }
+      });
+    }
+  
+    $( document ).ready(function() {
+      var month = "{{monthf}}";
+      console.log(month);
+      document.getElementById('select1').value = "{{yearf}}";
+      document.getElementById('select2').value =  "{{monthf}}";
+      document.getElementById('select3').value = "{{bigcf}}";
+      // console.log('1111');
+      // console.log({{yearf}});
+    });
+    function checkValues() {
+      console.log('1111');
+      console.log("{{yearf}}");
+      // console.log({{months}});
+    }
+
+  
+</script>
+
+<script> // change color of sales growth
+    function saleGrowth(){
+        var sales_growth = {{sales_growth_cart|safe}};
+        console.log("working color change function1");
+        if (sales_growth > 0){
+           document.getElementById('card4').style.color ="green"   
+           // document.getElementById("card4").innerHTML={{sales_growth_cart|safe}};
+           console.log("working color change function1");
+        }
+    }
+</script>
+
+
+
+{% endblock %}
+

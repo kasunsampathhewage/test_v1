@@ -1,0 +1,531 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<header class="app-header"><a class="app-header__logo" >Zkewed</a>
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>  
+</header>
+
+
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+
+<aside class="app-sidebar">
+    <div class="app-sidebar__user">
+        <!-- <img class="app-sidebar__user-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="User Image"> -->
+        <div>
+          <p class="app-sidebar__user-name">Zkewed Analytics</p>
+          <p class="app-sidebar__user-designation">An analytics company</p>
+        </div>
+    </div>
+
+    <ul class="app-menu">
+        <li><a class="app-menu__item" href="{% url 'home' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Summary Dashboard</span></a></li>
+        <li><a class="app-menu__item" href="{% url 'brand' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Detailed Dashboard</span></a></li>
+        <li><a class="app-menu__item active" href="{% url 'brand' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">comparision Dashboard</span></a></li>
+        <li><a class="app-menu__item" href="{% url 'predict' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Prediction Dashboard</span></a></li>     
+    </ul>
+</aside>
+
+
+<main class="app-content">
+
+    <div class="app-title"> <!-- page header and form-->
+        <div>
+          <h1><i class="fa fa-dashboard"></i> Detailed Dashboard</h1>
+          <p>summary of your selected brand</p>
+        </div>
+
+        <form method="POST" action="." onreset="false">{% csrf_token %}
+          <div class="row">
+
+              <div class="btn-group mr-2">     
+                  <select class="btn btn-primary" name="year" id="select1" >
+                      <option value="0" selected disabled>select a year</option>
+                      {% for y in years %}
+                      <option value="{{y}}">{{y}}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+                     
+              <div class="btn-group mr-2">
+                  <select class="btn btn-primary"  name="month"   id="select2" >
+                    <option value="0" selected disabled>select a month</option>
+                    {% for m in months %}
+                    <option value="{{m}}">{{m}}</option>
+                    {% endfor %}
+                  </select>
+              </div>
+        
+              <div class="btn-group mr-2">        
+                  <select class="btn btn-primary" name="bigc" id="select3" onchange="return showBrandNames();">
+                      <option value="0" selected disabled>select a category</option>  
+                      {% for b in bigcs %}
+                      <option value="{{b}}">{{b}}</option>
+                      {% endfor %}          
+                  </select>         
+              </div>
+
+              <div class="btn-group mr-2">        
+                <select class="btn btn-primary" name="brand" id="select4">
+                    <option value="0" selected disabled>select a brand</option>  
+                </select>         
+             </div>
+
+              <div class="btn-group mr-2">
+                <button class="btn btn-danger" type="submit" id="submitbtn" ><i class="fa fa-fw fa-lg fa-check-circle"></i>View charts</button>
+              </div>
+              
+          </div>
+        </form>
+
+    </div>
+
+    <p> <h6>Data showing for {{yearf}} {{monthf}} {{bigcf}} {{brandf}}</h6></p>
+    
+    <div class="row"> <!-- cards here -->
+
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small primary coloured-icon">
+            <i class="icon fa fa fa-usd fa-3x"></i>
+            <div class="info">
+              <h6>Total Sales</h6>
+              <p><b>{{total_sales_cart}} M</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small info coloured-icon">
+            <i class="icon fa fa fa-usd fa-3x"></i>
+            <div class="info">
+              <h6>Total Investments</h6>
+              <p><b>{{investment_Amount_cart}} M</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small warning coloured-icon"><i class="icon fa fa-line-chart fa-3x"></i>
+            <div class="info">
+              <h6>Sales/Investments</h6>
+              <p><b>{{ROI_value_cart}}</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="widget-small danger coloured-icon"><i class="icon fa fa-line-chart fa-3x"></i>
+            <div class="info">
+              <h6>Sales growth</h6>
+              <p><b>{{sales_growth_cart}} %</b></p>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+
+    <div class="row"> <!-- charts here -->
+
+        <div class="col-md-6"> <!-- chart1 -->
+          <div class="tile">
+            <h3 class="tile-title">Sales for the year</h3>
+                <canvas id="chart1"></canvas>
+         </div>
+        </div>
+
+        <div class="col-md-6"> <!-- chart2 -->
+          <div class="tile">
+            <h3 class="tile-title">Total Investment for the year</h3>
+                <canvas id="chart2"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6"> <!-- chart3-->
+          <div class="tile">
+            <h3 class="tile-title">Investment for Promotion Types</h3>
+              <canvas id="chart3"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6"> <!-- chart4 -->
+          <div class="tile">
+            <h3 class="tile-title">Total sales/Total investment</h3>
+                <canvas id="chart4"></canvas>
+          </div>
+        </div>
+
+        <div class="col-md-6"> <!-- chart5 -->
+            <div class="tile">
+              <h3 class="tile-title">ROI for promotion types</h3>
+                  <canvas id="chart5"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6"> <!-- chart6 -->
+            <div class="tile">
+              <h3 class="tile-title">Test123</h3>
+                  <canvas id="chart6"></canvas>
+            </div>
+        </div>
+        
+    </div>
+
+</main>
+
+<script>//create chart1
+  
+  var testdate = {{Sale_Date|safe}};
+  var ctx = document.getElementById('chart1').getContext('2d');
+
+  var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'bar',
+
+          // The data for our dataset
+          data: {
+              labels: testdate,
+              datasets: [{
+                  label: 'Sales',
+                  backgroundColor: 'rgb(47, 139, 56)',
+                  borderColor: 'rgb(47, 139, 56)',
+                  fill:'No',
+                  data: {{Sale_Amount|safe}}
+
+              }]
+          },
+
+          // Configuration options go here
+          options: {
+            legend:{
+                display: false
+                 }
+          }
+  });
+
+  setInterval(function(){
+    $.ajax({
+        url:'.',
+        success: function(test){
+          chart1.data.datasets[0].data = test.Sale_Amount;
+          chart1.data.labels = test.Sale_Date;
+          chart1.update();
+        }
+    });
+    });
+</script>
+
+<script> //create chart2
+  var testdate = {{investment_month|safe}};
+  var ctx = document.getElementById('chart2').getContext('2d');
+          
+  var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'line',
+
+          // The data for our dataset
+          data: {
+              labels: testdate,
+              datasets: [{
+                  label: 'Investment Amount',
+                  backgroundColor: 'rgb(47, 139, 56)',
+                  borderColor: 'rgb(47, 139, 56)',
+                  fill:'No',                    
+                  data: {{investment_Amount|safe}}
+              }]
+          },
+
+          // Configuration options go here
+          options: {
+            legend:{
+                display: false
+                 }
+          }
+  });
+
+  setInterval(function(){
+    $.ajax({
+        url:'.',
+        success: function(test){
+          chart2.data.datasets[0].data = test.investment_Amount;
+          chart2.data.labels = test.investment_month;
+          chart2.update();
+        }
+    });
+    });
+</script>
+
+<script> //create chart3
+  var ctx = document.getElementById('chart3').getContext('2d');
+  var chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+        labels: {{investment_month_A_P|safe}},
+        datasets: [
+            {
+                label: 'Consumer Promotion',
+                fill: false,
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: {{investment_Amount_Consumer_Promotion|safe}},
+                    },
+            {
+                label: 'A&P',
+                fill: false,
+                backgroundColor: 'rgb(98, 84, 225)',
+                borderColor: 'rgb(98, 84, 225)',
+                data: {{investment_Amount_A_P|safe}},
+            },
+            {
+                label: 'Display Only',
+                fill: false,
+                backgroundColor: 'rgb(102, 225, 84)',
+                borderColor: 'rgb(102, 225, 84)',
+                data: {{investment_Amount_Display_Only|safe}},
+            },
+            {
+                label: 'Distributor Margins',
+                fill: false,
+                backgroundColor: 'rgb(255, 255, 0)',
+                borderColor: 'rgb(255, 255, 0)',
+                data: {{investment_Amount_Distributor_Margins|safe}},
+            },
+            {
+                label: 'JBP',
+                fill: false,
+                backgroundColor: 'rgb(204, 0, 102)',
+                borderColor: 'rgb(204, 0, 102)',
+                data: {{investment_Amount_JBP|safe}},
+            },
+            {
+                label: 'Loyalty Schemes',
+                fill: false,
+                backgroundColor: 'rgb(0, 255, 255)',
+                borderColor: 'rgb(0, 255, 255)',
+                data: {{investment_Amount_Loyalty_Schemes|safe}},
+            },
+            {
+                label: 'Search Only',
+                fill: false,
+                backgroundColor: 'rgb(153, 0, 76)',
+                borderColor: 'rgb(153, 0, 76)',
+                data: {{investment_Amount_Search_Only|safe}},
+            },
+            {
+                label: 'Trade Promotion',
+                fill: false,
+                backgroundColor: 'rgb(255, 0, 0)',
+                borderColor: 'rgb(255, 0, 0)',
+                data: {{investment_Amount_Trade_Promotion|safe}},
+            },
+            {
+                label: 'Video',
+                fill: false,
+                backgroundColor: 'rgb(0, 0, 255)',
+                borderColor: 'rgb(0, 0, 255)',
+                data: {{investment_Amount_Video|safe}},
+            },
+            {
+                label: 'Facebook',
+                fill: false,
+                backgroundColor: 'rgb(128, 128, 128)',
+                borderColor: 'rgb(128, 128, 128)',
+                data: {{investment_Amount_facebook|safe}},
+            },
+            {
+                label: 'Instagram',
+                fill: false,
+                backgroundColor: 'rgb(255, 102, 102)',
+                borderColor: 'rgb(255, 102, 102)',
+                data: {{investment_Amount_instagram|safe}},
+            },
+            {
+                label: 'Messenger',
+                fill: false,
+                backgroundColor: 'rgb(0, 102, 102)',
+                borderColor: 'rgb(0, 102, 102)',
+                data: {{investment_Amount_messenger|safe}},
+            }
+            ]
+            },
+            options: {
+                legend:{
+                    display: true,
+                    position: 'bottom',
+                    padding: 0.1,
+                    labels:{
+                        usePointStyle: true,
+                    }
+                }
+            }
+            });
+</script>
+
+<script> //create chart4
+  
+  var testdate = {{ROI_month|safe}};
+  var ctx = document.getElementById('chart4').getContext('2d');
+
+  var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'line',
+
+          // The data for our dataset
+          data: {
+              labels: testdate,
+              datasets: [{
+                  label: 'sales/investment',
+                  backgroundColor: 'rgb(47, 139, 56)',
+                  borderColor: 'rgb(47, 139, 56)',
+                  fill:'No',
+                  data: {{ROI_value|safe}}
+              }]
+          },
+
+          // Configuration options go here
+          options: {
+            legend:{
+                display: false
+                 }
+          }
+  });
+
+  setInterval(function(){
+    $.ajax({
+        url:'.',
+        success: function(test){
+          chart3.data.datasets[0].data = test.ROI_value;
+          chart3.data.labels = test.ROI_month;
+          chart3.update();
+        }
+    });
+    });
+
+</script>
+
+<script> //create chart5
+    
+        var testdate = {{ROI_Investment_Types|safe}};
+        var ctx = document.getElementById('chart5').getContext('2d');
+    
+        var chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'horizontalBar',
+    
+                // The data for our dataset
+                data: {
+                    labels: testdate,
+                    datasets: [{
+                        label: 'ROI',
+                        backgroundColor: 'rgb(47, 139, 56)',
+                        borderColor: 'rgb(47, 139, 56)',
+                        fill:'No',
+                        data: {{ROI_Investment_value|safe}}
+    
+                    }]
+                },
+    
+                // Configuration options go here
+                options: {
+                    legend:{
+                        display: false
+                         }
+                }
+        });
+    
+        setInterval(function(){
+          $.ajax({
+              url:'.',
+              success: function(test){
+                chart1.data.datasets[0].data = test.ROI_Investment_value;
+                chart1.data.labels = test.ROI_Investment_Types;
+                chart1.update();
+              }
+          });
+      });
+</script>
+
+<script> //create chart6
+    var testdate = {{Investment_type|safe}};
+    var ctx = document.getElementById('chart6').getContext('2d');
+            
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'horizontalBar',
+  
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [{
+                    label: 'ROI',
+                    backgroundColor: 'rgb(47, 139, 56)',
+                    borderColor: 'rgb(47, 139, 56)',
+                    fill:'No',                    
+                    data: {{ROI1|safe}}
+                }]
+            },
+  
+            // Configuration options go here
+            options: {}
+    });
+  
+    setInterval(function(){
+      $.ajax({
+          url:'.',
+          success: function(test){
+            chart1.data.datasets[0].data = test.ROI;
+            chart1.data.labels = test.Sale_Date;
+            chart1.update();
+          }
+      });
+  });
+</script>
+
+<script> // get brand names according to bigc
+  function showBrandNames(){
+    var Bigc_name = document.getElementById('select3');
+    var Bigc_name_value = Bigc_name.options[Bigc_name.selectedIndex].value;
+    var string="";
+    
+    if(Bigc_name_value == 'Foods'){
+
+      var arr = {{Fbrands|safe}};
+    }
+    else if(Bigc_name_value == 'Self Care'){
+      var arr={{SCbrands|safe}}
+    }
+    else if(Bigc_name_value == 'Beverages'){
+      var arr={{Bbrands|safe}}
+    }
+    else if(Bigc_name_value == 'Home Products'){
+      var arr={{HCbrands|safe}}
+    }
+    for(i=0;i<arr.length;i++)
+            {   
+                string=string+"<option value="+arr[i]+">"+arr[i]+"</option>";
+            }
+            
+            document.getElementById("select4").innerHTML=string;
+
+  }
+</script>
+
+<script> // view charts button enable/disable
+  function checkform() {
+      var yearVal = document.getElementById('select1').value;
+      var monthVal = document.getElementById('select2').value;
+      var BigcVal = document.getElementById('select3').value;
+      var BrandVal = document.getElementById('select4').value;
+
+      if ((yearVal != 0) && (monthVal != 0) && (BigcVal != 0) && (BrandVal != 0)) {
+          document.getElementById('submitbtn').disabled = false;
+          console.log('dis');
+      } else {
+          document.getElementById('submitbtn').disabled = true;
+      }
+    }
+</script>
+
+
+{% endblock %}

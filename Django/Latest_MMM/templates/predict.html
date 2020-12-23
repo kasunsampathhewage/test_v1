@@ -1,0 +1,687 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<header class="app-header"><a class="app-header__logo" >Zkewed</a>
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
+</header>
+
+  <!-- Sidebar menu-->
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+  
+  <aside class="app-sidebar">
+
+        <div class="app-sidebar__user">
+          <!-- <img class="app-sidebar__user-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="User Image"> -->
+          <div>
+            <p class="app-sidebar__user-name">Zkewed Analytics</p>
+            <p class="app-sidebar__user-designation">An analytics company</p>
+          </div>
+        </div>
+
+        <ul class="app-menu">
+          <li><a class="app-menu__item" href="{% url 'home' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Summary Dashboard</span></a></li>
+          <li><a class="app-menu__item" href="{% url 'brand' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Detailed Dashboard</span></a></li>
+          <li><a class="app-menu__item active" href="{% url 'predict' %}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Prediction Dashboard</span></a></li>   
+        </ul>
+
+      <ul class="app-menu_slide">
+
+        <button type="button" class="btn btn-primary btn-sm" onclick="showSlider1();">Offline Promotion</button><br><br>       
+        <!-- <p></p> -->
+
+        <div  id ="offline" style="display:None;">
+
+            <li ><label for="customRange2" style="color:rgb(254, 254, 254)">Consumer Promotion</label></li>
+            <li ><input type="range" class="custom-range" min="-50" max="50" name = "Consumer_Promotion" id="Consumer_Promotion_input" onchange="Consumer_Promotion_val.value=value">
+            <output id="Consumer_Promotion_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+
+            <li><label for="customRange3" style="color:rgb(254, 254, 254)">AandP</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "AandP" id="AandP_input" onchange="AandP_val.value=value">
+            <!--input type="submit" value="Submit"-->
+            <output id="AandP_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+
+            <li><label for="customRange4" style="color:rgb(254, 254, 254)">JBP</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50"  name = "JBP" id="JBP_input" onchange="JBP_val.value=value">
+            <output id="JBP_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+
+            <li><label for="customRange5" style="color:rgb(254, 254, 254)">Trade Promotion</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Trade_Promotion" id="Trade_Promotion_input" onchange="Trade_Promotion_val.value=value">
+            <output id="Trade_Promotion_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+
+            <li><label for="customRange6" style="color:rgb(254, 254, 254)">Distributor Margins</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Distributor_Margin" id="Distributor_Margins_input" onchange="Distributor_Margin_val.value=value">
+            <output id="Distributor_Margin_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+
+            <li><label for="customRange7" style="color:rgb(254, 254, 254)">Loyalty Schems</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Loyalty_Schems" id="Loyalty_Schems_input" onchange="Loyalty_Schems_val.value=value">
+            <output id="Loyalty_Schems_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+        </div>
+        <p></p>
+
+        <!-- <div class="app-menu__item_slide"> -->
+        <button type="button" class="btn btn-primary btn-sm" onclick="showSlider2();">Online Promotion</button>
+        <!-- </div> -->
+        <p></p>
+
+        <div id = "online" style="display:None;" >
+            <li><label for="customRange8" style="color:rgb(254, 254, 254)">Facebook</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Facebook" id="Facebook_input" onchange="Facebook_val.value=value">
+            <output id="Facebook_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+  
+            <li><label for="customRange9" style="color:rgb(254, 254, 254)">Instagram</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Instagram" id="Instagram_input" onchange="Instagram_val.value=value">
+            <output id="Instagram_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+    
+            <li><label for="customRange10" style="color:rgb(254, 254, 254)">Video</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Video" id="Video_input" onchange="Video_val.value=value">
+            <output id="Video_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+    
+            <li><label for="customRange11" style="color:rgb(254, 254, 254)">Search Only</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Search_Only" id="Search_Only_input" onchange="Search_Only_val.value=value">
+            <output id="Search_Only_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+    
+            <li><label for="customRange12" style="color:rgb(254, 254, 254)">Display Only</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Display_Only" id="Display_Only_input" onchange="Display_Only_val.value=value">
+            <output id="Display_Only_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+    
+            <li><label for="customRange13" style="color:rgb(254, 254, 254)">Messenger</label></li>
+            <li><input type="range" class="custom-range" min="-50" max="50" name = "Messenger" id="Messenger_input" onchange="Messenger_val.value=value">
+            <output id="Messenger_val" style="visibility:visible; color:white; font-size:10px;" >0</output></li>
+    
+          </div>
+
+      </ul>
+          
+  </aside>
+  
+  <main class="app-content">
+
+    <div class="app-title">
+        <div>
+          <h1><i class="fa fa-dashboard"></i> Similulation Dashboard</h1>
+          <p>Get your predicted output here</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        
+      <div class="col-md-12"><!-- filter form -->
+            <form method="POST" action="." onreset="false">{% csrf_token %}
+               
+                <div class="btn-group mr-2">     
+                    <!--select class="btn btn-primary" name="year" id="select1" onchange="checkform()">
+                        <option value ="0" selected disabled>select a year</option>
+                        {% for y in years %}
+                        <option value="{{y}}">{{y}}</option>
+                        {% endfor %}
+                    </select-->
+                </div>
+                               
+                  <div class="btn-group mr-2">
+                      <!--select class="btn btn-primary"  name="month"   id="select2" onchange="checkform()">
+                        <option value="0" selected disabled>select a month</option>
+                        {% for m in months %}
+                        <option value="{{m}}">{{m}}</option>
+                        {% endfor %}
+                      </select-->
+                  </div>
+            
+                  <div class="btn-group mr-2">        
+                      <select class="btn btn-primary" name="bigc" id="select3"  onchange="return showBrandNames();" onchange="checkform()">
+                          <option value="0" selected disabled>select a category</option>  
+                          {% for b in bigcs %}
+                          <option value="{{b}}">{{b}}</option>
+                          {% endfor %}          
+                      </select>         
+                  </div>
+    
+                  <div class="btn-group mr-2">        
+                    <select class="btn btn-primary" name="brand" id="select4"  onchange="checkform()">
+                        <option value="0" selected disabled>select a brand</option>  
+                    </select>         
+                  </div>
+    
+                  <div class="btn-group mr-2">        
+                    <select class="btn btn-primary" name="pyear" id="select5" onchange="checkform()">
+                        <option value="0" selected disabled>No of Months</option>
+                        <option value="1" >1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>                               
+                    </select>         
+                  </div>
+    
+                  <div class="btn-group mr-2">
+                    <button class="btn btn-danger" type="submit"  id="submitbtn" disabled="disabled"><i class="fa fa-fw fa-lg fa-check-circle"></i>View charts</button>
+                  </div>
+      
+                  <br>
+                  <br>                   
+            </form>             
+      </div>
+    
+    </div>
+
+    <br>
+    <br>
+
+      <h2>{{Trade_Promotion}}</h2>
+
+      <div class="row"> <!-- charts here -->
+
+          <div class="col-md-6"><!-- chart 1-->
+            <div class="tile">
+              <h3 class="text-white bg-dark">Sales Forecast</h3>
+                <canvas id="chart6"></canvas>
+            </div>
+          </div>
+
+          <div class="col-md-6"><!--chart 2 -->
+            <div class="tile">
+              <h3 class="text-white bg-dark">Sales Simulation</h3>
+              <h2>{{AnP1}}</h2>
+                <canvas id="chart4"></canvas>           
+            </div>
+          </div>
+
+          <!-- <div class="col-md-6">
+            <div class="tile">
+              <h3 class="tile-title">chart 3</h3>
+                <canvas id="chart3"></canvas>           
+            </div>
+          </div> -->
+
+          <!--div class="col-md-6"> <0chart 4>
+            <div class="tile">
+              <h3 class="tile-title">Chart4</h3>
+              < <h5>{{forecastsales}}</h5>   >
+                <canvas id="chart4"></canvas>  
+            </div>
+          </div-->
+
+          <!--div class="col-md-6"> 
+            <div class="tile">
+              <h3 class="tile-title">Chart5</h3>
+              <canvas id="chart5"></canvas>
+              
+            </div>
+          </div-->
+
+          <!--div class="col-md-6"> <chart 6>
+            <div class="tile">
+              <h3 class="tile-title">Chart6</h3>
+              < <div class="embed-responsive embed-responsive-16by9"> >
+                <chart here>
+                <canvas id="chart6"></canvas>
+              </div> 
+            </div>
+          </div-->
+
+       </div>
+
+</main>
+
+
+<script> //create chart1
+    var testdate = {{Sale_Date|safe}};
+    var ctx = document.getElementById('chart1').getContext('2d');
+            
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+  
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [{
+                    label: 'Sale Amount',
+                    backgroundColor: 'rgb(47, 139, 56)',
+                    borderColor: 'rgb(47, 139, 56)',
+                    fill:'No',                    
+                    data: {{Sale_Amount|safe}}
+                }]
+            },
+  
+            // Configuration options go here
+            options: {
+              scales: {
+                xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Date",
+                    },
+                  },],
+                yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Sales",
+                    },
+                  },]
+         },
+            legend: {
+                display: false,
+                labels: {
+                    display: false
+                }
+        }
+            }
+    });
+  
+    setInterval(function(){
+      $.ajax({
+          url:'.',
+          success: function(test){
+            chart1.data.datasets[0].data = test.Sale_Amount;
+            chart1.data.labels = test.Sale_Date;
+            chart1.update();
+          }
+      });
+  });
+</script>
+
+
+<script>//create chart2
+  
+    var testdate = {{Month|safe}};
+    var ctx = document.getElementById('chart2').getContext('2d');
+  
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'bar',
+  
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [
+                {
+                  label: 'Consumer_Promotion_Contribution',
+                  backgroundColor: 'rgb(47, 139, 56)',
+                  borderColor: 'rgb(47, 139, 56)',
+                  fill:'No',
+                  data: {{Consumer_Promotion_Contribution|safe}},
+                  
+                },
+                {
+                  label: 'Trade_Promotion_Contribution',
+                  backgroundColor: 'rgb(101, 59, 216)',
+                  borderColor: 'rgb(101, 59, 216)',
+                  fill:'No',
+                  data: {{Trade_Promotion_Contribution|safe}},        
+                },
+                {
+                  label: 'JBP_Contribution',
+                  backgroundColor: 'rgb(72, 143, 49)',
+                  borderColor: 'rgb(72, 143, 49)',
+                  fill:'No',
+                  data: {{JBP_Contribution|safe}}
+  
+                },
+                {
+                  label: 'Distributor_Margins_Contribution',
+                  backgroundColor: 'rgb(174, 205, 194',
+                  borderColor: 'rgb(174, 205, 194)',
+                  fill:'No',
+                  data: {{Distributor_Margins_Contribution|safe}}
+  
+                },
+                {
+                  label: 'Loyalty_Schemes_Contribution',
+                  backgroundColor: 'rgb(236, 131, 138)',
+                  borderColor: 'rgb(236, 131, 138)',
+                  fill:'No',
+                  data: {{Loyalty_Schemes_Contribution|safe}}
+                },
+                {
+                  label: 'Video_Contribution',
+                  backgroundColor: 'rgb(222, 66, 91)',
+                  borderColor: 'rgb(222, 66, 91)',
+                  fill:'No',
+                  data: {{Video_Contribution|safe}}
+                },
+                {
+                  label: 'facebook_Contribution',
+                  backgroundColor: 'rgb(0, 63, 92)',
+                  borderColor: 'rgb(0, 63, 92)',
+                  fill:'No',
+                  data: {{facebook_Contribution|safe}}
+                },
+                {
+                  label: 'Search_Only_Contribution',
+                  backgroundColor: 'rgb(188, 80, 144)',
+                  borderColor: 'rgb(188, 80, 144)',
+                  fill:'No',
+                  data: {{Search_Only_Contribution|safe}}
+                },
+                {
+                  label: 'instagram_Contribution',
+                  backgroundColor: 'rgb(255, 99, 97)',
+                  borderColor: 'rgb(255, 99, 97)',
+                  fill:'No',
+                  data: {{instagram_Contribution|safe}}
+                },
+                {
+                  label: ':messenger_Contribution',
+                  backgroundColor: 'rgb(100, 89, 21)',
+                  borderColor: 'rgb(100, 89, 216)',
+                  fill:'No',
+                  data: {{messenger_Contribution|safe}}
+                },
+                {
+                  label: ':Display_Only_Contribution',
+                  backgroundColor: 'rgb(255, 166, 0)',
+                  borderColor: 'rgb(255, 166, 0)',
+                  fill:'No',
+                  data: {{Display_Only_Contribution|safe}}
+                },
+                ]
+            },
+            // Configuration options go here
+            options: {scales: {
+              xAxes: [{ stacked: true }],
+              yAxes: [{ stacked: true }]
+            }}
+              
+    });
+</script>
+
+<!-- <script> //create chart3
+  
+  var testdate = {{Month|safe}};
+  var ctx = document.getElementById('chart3').getContext('2d');
+
+  var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'bar',
+
+          // The data for our dataset
+          data: {
+              labels: testdate,
+              datasets: [
+              {
+                label: 'Consumer_Promotion_Contribution',
+                backgroundColor: 'rgb(47, 139, 56)',
+                borderColor: 'rgb(47, 139, 56)',
+                fill:'No',
+                data: {{Consumer_Promotion_Contribution|safe}},
+                
+              },
+              {
+                label: 'Trade_Promotion_Contribution',
+                backgroundColor: 'rgb(100, 89, 21)',
+                borderColor: 'rgb(100, 89, 216)',
+                fill:'No',
+                data: {{Trade_Promotion_Contribution|safe}},        
+              },
+              ]
+          },
+          // Configuration options go here
+          options: {scales: {
+            xAxes: [{ stacked: true }],
+            yAxes: [{ stacked: true }]
+          }}
+            
+  });
+</script> -->
+
+<script> // create chart4
+    var testdate = {{simulationDate|safe}};
+    var ctx = document.getElementById('chart4').getContext('2d');
+            
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+  
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [{
+                    label: 'forecastsales',
+                    backgroundColor: 'rgb(97,164,164)',
+                    borderColor: 'rgb(97,164,164)',
+                    fill:'No',                    
+                    data: {{forecastsales|safe}}
+                },
+              {
+                    label: 'simulationsales',
+                    backgroundColor: 'rgb(252, 3, 102)',
+                    borderColor: 'rgb(252, 3, 102)',
+                    fill:'No',                    
+                    data: {{simulationSales|safe}}
+              }
+              
+              ]
+            },
+  
+            // Configuration options go here
+            options: {
+              scales: {
+                xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Month",
+                    },
+                  },],
+                yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Sales",
+                    },
+                  },]
+              },
+                  legend:{
+                          display: true,
+                          position: 'bottom',
+                          padding: 0.1,
+                          labels:{
+                              usePointStyle: true,
+                    }
+            
+                    }
+            
+            }
+    });
+  
+</script>
+
+<script> //create chart5
+    var testdate = {{Investment_type|safe}};
+    var ctx = document.getElementById('chart5').getContext('2d');
+            
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'horizontalBar',
+  
+            // The data for our dataset
+            data: {
+                labels: testdate,
+                datasets: [{
+                    label: 'ROI',
+                    backgroundColor: 'rgb(47, 139, 56)',
+                    borderColor: 'rgb(47, 139, 56)',
+                    fill:'No',                    
+                    data: {{ROI1|safe}}
+                }]
+            },
+  
+            // Configuration options go here
+            options: {
+              scales: {
+                xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "ROI",
+                    },
+                  },],
+                yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Promotion Type",
+                    },
+                  },]
+         },
+            legend: {
+                display: false,
+                labels: {
+                    display: false
+                }
+        }
+            }
+    });
+  
+    setInterval(function(){
+      $.ajax({
+          url:'.',
+          success: function(test){
+            chart1.data.datasets[0].data = test.ROI;
+            chart1.data.labels = test.Sale_Date;
+            chart1.update();
+          }
+      });
+  });
+</script>
+
+<script> //create chart6
+    var testdate = {{Sale_Date|safe}};
+    //var testdate2 = {{Sale_Date2|safe}};
+    var ctx = document.getElementById('chart6').getContext('2d');
+            
+    var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+  
+            // The data for our dataset 
+            data: {
+                labels:testdate,
+                datasets: [{
+                    label: 'Sale Amount',
+                    backgroundColor: 'rgb(97,164,164)',
+                    borderColor: 'rgb(97,164,164)',
+                    fill:'No',                    
+                    data: {{Sale_Amount1|safe}},
+                    spanGaps: false
+                },
+                {
+                    label: 'Sale Amount prediction',
+                    backgroundColor: 'rgb(207, 12, 32)',
+                    borderColor: 'rgb(207, 12, 32)',
+                    fill:'No',                    
+                    data: {{Sale_AmountP|safe}},
+                    spanGaps: true 
+                }
+              ]
+            },
+  
+            // Configuration options go here
+            options: {
+              scales: {
+                xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Month",
+                    },
+                  },],
+                yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Sales",
+                    },
+                  },]
+              },
+                    legend:{
+                          display: true,
+                          position: 'bottom',
+                          padding: 0.1,
+                          labels:{
+                              usePointStyle: true,
+                    }
+            
+                    }
+            }
+    });
+  
+    setInterval(function(){
+      $.ajax({
+          url:'.',
+          success: function(test){
+            chart1.data.datasets[0].data = test.Sale_Amount;
+            chart1.data.labels = test.Sale_Date;
+            chart1.update();
+          }
+      });
+  });
+</script>
+
+<script> //show brand names according to bigc
+
+    function showBrandNames(){
+      var Bigc_name = document.getElementById('select3');
+      var Bigc_name_value = Bigc_name.options[Bigc_name.selectedIndex].value;
+      var string="";
+      
+      if(Bigc_name_value == 'Foods'){
+        var arr = {{Fbrands|safe}};
+      }
+      else if(Bigc_name_value == 'Self Care'){
+        var arr={{SCbrands|safe}}
+      }
+      else if(Bigc_name_value == 'Beverages'){
+        var arr={{Bbrands|safe}}
+      }
+      else if(Bigc_name_value == 'Home Products'){
+        var arr={{HCbrands|safe}}
+      }
+      for(i=0;i<arr.length;i++)
+              {
+                  string=string+"<option value="+arr[i]+">"+arr[i]+"</option>";
+              }
+              
+              document.getElementById("select4").innerHTML=string;
+
+    }
+  
+</script>
+
+<script> // view charts button enable/disable
+    function checkform() {
+        //var yearVal = document.getElementById('select1').value;
+        //var monthVal = document.getElementById('select2').value;
+        var BigcVal = document.getElementById('select3').value;
+        var brandVal = document.getElementById('select4').value;
+        var nyearVal = document.getElementById('select5').value;
+  
+        if ((BigcVal != 0)&& (brandVal != 0)&& (nyearVal != 0)) {
+            document.getElementById('submitbtn').disabled = false;
+            console.log('dis');
+        } else {
+            document.getElementById('submitbtn').disabled = true;
+        }
+      }
+</script>
+
+<script> // hide sliders 
+    function showSlider1(){   
+
+      //if(document.getElementById('offline').style.display ="none" ){
+        //document.getElementById('offline').style.display ="Block"
+     // }
+
+     // else{
+       // document.getElementById('offline').style.display ="none"; 
+      //}
+
+      document.getElementById('offline').style.display ="Block"   
+    }
+
+    function showSlider2(){   
+      document.getElementById('online').style.display ="Block";   
+}
+</script>
+
+<script> //slider values
+  function slidervalues(){
+    var AandP = document.getElementById('AandP_input').value;
+  }
+
+</script>
+
+{% endblock %}
